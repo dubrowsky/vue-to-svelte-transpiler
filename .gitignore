@@ -5,6 +5,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 middleware/
+repl-vue/dist
+repl-svelte/dist
 
 # Editor directories and files
 .idea
