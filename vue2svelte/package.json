@@ -1,0 +1,23 @@
+{
+  "name": "vue2svelte",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.ts",
+  "scripts": {
+    "transpile": "ts-node ./src/cli.ts"
+  },
+  "dependencies": {
+    "@vue/component-compiler-utils": "^3.2.0",
+    "prettier": "^1.19.1",
+    "prettier-plugin-svelte": "^1.4.2",
+    "svelte": "^3.19.2",
+    "ts-expose-internals": "^3.9.7",
+    "ts-node": "^9.1.1",
+    "typescript": "^3.9.7",
+    "vue": "2.6.12",
+    "vue-template-compiler": "^2.6.12",
+    "yargs": "^17.2.1"
+  },
+  "author": "",
+  "license": "ISC"
+}
