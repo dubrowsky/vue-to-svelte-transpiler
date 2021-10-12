@@ -3,6 +3,7 @@ const stub = path.resolve(__dirname, 'fs-shim.js');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 module.exports = {
+  publicPath: '/vue-to-svelte-transpiler/',
   configureWebpack: {
     resolve: {
       alias: {
