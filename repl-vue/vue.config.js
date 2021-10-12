@@ -4,6 +4,7 @@ const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 module.exports = {
   publicPath: '/vue-to-svelte-transpiler/',
+  outputDir: path.relative(__dirname, '../docs'),
   configureWebpack: {
     resolve: {
       alias: {
