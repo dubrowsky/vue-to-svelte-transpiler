@@ -54,6 +54,7 @@ export class ScriptProcessor {
   requiredRuntime: Record<string, true> = {};
   usedVars: Record<string, true> = {};
   exported: ts.ObjectLiteralExpression;
+  contextFields: { name: string, value: any }[] = [];
   constructor(
     src: string,
     path: string,
@@ -243,6 +244,12 @@ export class ScriptProcessor {
             return `import ${this.printNode(node.importClause)} from '${newFrom}'`;
           }
         }
+        if (ts.isVariableStatement(node)) {
+          node.declarationList.declarations.forEach(variable => {
+            const value = variable.initializer?.getText().replace(/['"]+/g, '')
+            this.contextFields.push({name: variable.name.getText(), value})
+          })
+        }
         return this.printNode(node);
       },
     ).filter(Boolean).join('\n');
@@ -295,6 +302,7 @@ export class ScriptProcessor {
       const keys = vars.map(v => v.name).join(', ');
       body = `let {${keys}} = (() => {${fn.body}})()`;
     }
+    this.contextFields = [...this.contextFields, ...vars]
     return { body, usedKeys: fn.usedKeys, name: 'data' };
   }
 
@@ -416,6 +424,33 @@ export class ScriptProcessor {
             return ts.createIdentifier(this.varMap[n.name.text]);
           }
           return n.name;
+        }
+        if (
+            ts.isElementAccessExpression(n)
+            && n.expression
+            && n.expression.kind === ts.SyntaxKind.ThisKeyword
+        ) {
+          const name = n.argumentExpression.getText()
+          useKey(name);
+          if (this.varMap[name]) {
+            return ts.createIdentifier(this.varMap[name]);
+          }
+
+          const contextField = [
+            ...collectProps(this.getOptionNode('props')),
+            ...this.contextFields
+          ]
+
+          const identifiers = name.split('+').map(nameChunk => {
+            const field = contextField.find(field => field.name === nameChunk.trim())
+
+            if (field) {
+              // @ts-ignore
+              return field?.value
+            }
+          })
+
+          return ts.createIdentifier(identifiers.join(''));
         }
         // const { foo } = this => [empty]
         // const { foo: bar } = this => const bar = foo;
